@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5대 통증 서울한의원 행운의 룰렛!</title>
+    <!-- 넥슨 고딕체 폰트 추가 -->
+    <link href="https://webfontworld.github.io/NexonGothic/NexonGothic.css" rel="stylesheet">
+    <style>
+        /* 전체 페이지 스타일링 */
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'NexonGothic', sans-serif;
+        }
+        /* 제목 스타일링 */
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        /* 룰렛 컨테이너 스타일링 */
+        .roulette-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            margin: 20px auto;
+        }
+        /* SVG 원판 스타일 */
+        .roulette-svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        /* 포인터(삼각형) 스타일 */
+        .pointer {
+            position: absolute;
+            left: 50%;
+            top: -24px;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+        /* 결과 표시 영역 스타일링 */
+        .result {
+            font-size: 2rem;
+            color: #2c3e50;
+            text-align: center;
+            margin: 20px 0;
+            min-height: 60px;
+            font-weight: bold;
+        }
+        /* 시작 버튼 스타일링 */
+        .start-button {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            margin: 20px 0;
+            font-family: 'NexonGothic', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        /* 반응형 디자인 */
+        @media (max-width: 600px) {
+            .roulette-container {
+                width: 300px;
+                height: 300px;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+            .result {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>5대 통증 서울한의원<br>행운의 룰렛!</h1>
+    <div class="roulette-container">
+        <!-- 포인터(삼각형) -->
+        <svg class="pointer" width="40" height="24">
+            <polygon points="20,0 0,24 40,24" fill="#e74c3c" />
+        </svg>
+        <!-- SVG 원판 -->
+        <svg id="rouletteWheel" class="roulette-svg" viewBox="0 0 400 400"></svg>
+    </div>
+    <div class="result" id="result"></div>
+    <button class="start-button" id="startButton">시작</button>
+    <script>
+    // =========================
+    // 룰렛 항목 정의
+    // =========================
+    const items = [
+        '한방 파스 1장',
+        '약침 20% 할인권',
+        '한방 약차 1잔',
+        '원장님 1:1 건강 상담',
+        '숨편한고 1개',
+        '꽝, 한번더!'
+    ];
+    // =========================
+    // SVG 색상 팔레트 (섹션별로 다르게)
+    // =========================
+    const colors = [
+        '#f7d358', '#b5e7a0', '#86c5d8', '#b39ddb', '#f67280', '#ffd3b6'
+    ];
+    // =========================
+    // SVG 원판 그리기 함수
+    // =========================
+    function drawRoulette(angleOffset = 0) {
+        const svg = document.getElementById('rouletteWheel');
+        svg.innerHTML = ''; // 기존 내용 제거
+        const cx = 200, cy = 200, r = 180, rText = 120, rHole = 50;
+        const n = items.length;
+        const anglePer = 360 / n;
+        // 각 섹션 그리기
+        for (let i = 0; i < n; i++) {
+            // 시작/끝 각도 (라디안)
+            const startAngle = ((i * anglePer + angleOffset) - 90) * Math.PI / 180;
+            const endAngle = (((i + 1) * anglePer + angleOffset) - 90) * Math.PI / 180;
+            // 부채꼴 path 계산
+            const x1 = cx + r * Math.cos(startAngle);
+            const y1 = cy + r * Math.sin(startAngle);
+            const x2 = cx + r * Math.cos(endAngle);
+            const y2 = cy + r * Math.sin(endAngle);
+            // path d 속성 (큰 원)
+            const d = [
+                `M ${cx} ${cy}`,
+                `L ${x1} ${y1}`,
+                `A ${r} ${r} 0 0 1 ${x2} ${y2}`,
+                'Z'
+            ].join(' ');
+            // path element 생성
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', d);
+            path.setAttribute('fill', colors[i % colors.length]);
+            svg.appendChild(path);
+            // 텍스트 각도 중앙 계산
+            const midAngle = ((i + 0.5) * anglePer + angleOffset - 90) * Math.PI / 180;
+            const tx = cx + rText * Math.cos(midAngle);
+            const ty = cy + rText * Math.sin(midAngle);
+            // 텍스트 element 생성
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('x', tx);
+            text.setAttribute('y', ty);
+            text.setAttribute('fill', '#222');
+            text.setAttribute('font-size', '20');
+            text.setAttribute('font-family', 'NexonGothic, sans-serif');
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('alignment-baseline', 'middle');
+            // 텍스트 회전 (섹션 중심에 수직)
+            const deg = (i + 0.5) * anglePer + angleOffset;
+            text.setAttribute('transform', `rotate(${deg} ${tx} ${ty})`);
+            text.textContent = items[i];
+            svg.appendChild(text);
+        }
+        // 중앙 구멍(흰색 원)
+        const hole = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        hole.setAttribute('cx', cx);
+        hole.setAttribute('cy', cy);
+        hole.setAttribute('r', rHole);
+        hole.setAttribute('fill', '#fff');
+        svg.appendChild(hole);
+    }
+    // =========================
+    // 룰렛 회전 애니메이션
+    // =========================
+    let currentAngle = 0;
+    function spinRoulette() {
+        const result = document.getElementById('result');
+        const startButton = document.getElementById('startButton');
+        startButton.disabled = true;
+        // 랜덤 당첨 인덱스
+        const n = items.length;
+        const winIndex = Math.floor(Math.random() * n);
+        // 당첨 섹션의 중앙이 포인터(0도)에 오도록 각도 계산
+        const anglePer = 360 / n;
+        const targetAngle = 360 * 5 + (360 - (winIndex * anglePer + anglePer / 2)); // 5바퀴 + 당첨
+        // 애니메이션
+        const duration = 5000;
+        const start = performance.now();
+        function animate(now) {
+            const elapsed = now - start;
+            const t = Math.min(elapsed / duration, 1);
+            // easeOutCubic
+            const ease = 1 - Math.pow(1 - t, 3);
+            const angle = currentAngle + (targetAngle - currentAngle) * ease;
+            drawRoulette(angle);
+            if (t < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                currentAngle = targetAngle % 360;
+                // 결과 표시
+                result.textContent = `축하합니다! ${items[winIndex]}에 당첨되셨습니다!`;
+                createFireworks();
+                startButton.disabled = false;
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    // =========================
+    // 폭죽 효과 함수 (기존과 동일)
+    // =========================
+    function createFireworks() {
+        for (let i = 0; i < 50; i++) {
+            const firework = document.createElement('div');
+            firework.style.position = 'fixed';
+            firework.style.width = '5px';
+            firework.style.height = '5px';
+            firework.style.borderRadius = '50%';
+            firework.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            firework.style.left = `${Math.random() * 100}vw`;
+            firework.style.top = `${Math.random() * 100}vh`;
+            firework.style.animation = `firework ${1 + Math.random()}s ease-out forwards`;
+            document.body.appendChild(firework);
+            setTimeout(() => firework.remove(), 2000);
+        }
+    }
+    // 폭죽 애니메이션 스타일 추가
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes firework {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(20); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+    // =========================
+    // 이벤트 리스너 및 초기화
+    // =========================
+    document.getElementById('startButton').addEventListener('click', spinRoulette);
+    window.addEventListener('load', () => {
+        currentAngle = 0;
+        drawRoulette(0);
+    });
+    </script>
+</body>
+</html> 
